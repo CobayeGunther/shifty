@@ -17,6 +17,7 @@ except sqlite3.OperationalError:
 
 
 def beatifulize(shift):
+    #i don't like the datetime representation, so i made my own showing weekday, shifts and hours of work
     week   = ['Monday',
               'Tuesday',
               'Wednesday',
