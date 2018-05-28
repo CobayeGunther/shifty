@@ -6,7 +6,9 @@ import datetime
 import time
 
 
-db = sqlite3.connect('datas', check_same_thread=False, detect_types=sqlite3.PARSE_DECLTYPES)
+db = sqlite3.connect('datas',
+                    check_same_thread=False,
+                    detect_types=sqlite3.PARSE_DECLTYPES)
 try:
     cursor = db.cursor()
     cursor.execute('''
@@ -17,7 +19,8 @@ except sqlite3.OperationalError:
 
 
 def beatifulize(shift):
-    #i don't like the datetime representation, so i made my own showing weekday, shifts and hours of work
+    #i don't like the datetime representation,
+    #so i made my own showing weekday, shifts and hours of work
     week   = ['Monday',
               'Tuesday',
               'Wednesday',
@@ -28,51 +31,52 @@ def beatifulize(shift):
     ddmm = shift[0]
     begin = shift[1]
     end = shift[2]
-    if shift[3] != None:
+    if shift[3] is not None:
         beginSec = shift[3]
         endSec = shift[4]
 
-
-    msg =  str(week[begin.weekday()]) + ' ' + str(begin.day) + '/' + str(begin.month) + ' : \n' + \
-                 str(begin.hour) + ':' + str(begin.minute) + '-' + \
-                 str(end.hour) + ':' + str(end.minute)
-    if shift[3] != None:
+    msg =  str(week[begin.weekday()]) + ' ' \
+             + str(begin.day) + '/' + str(begin.month) + ' : \n' + \
+             str(begin.hour) + ':' + str(begin.minute) + '-' + \
+             str(end.hour) + ':' + str(end.minute)
+    if shift[3] is not None:
         beginSec = shift[3]
         endSec = shift[4]
-        msg = msg + "\n" + str(beginSec.hour) + ':' + str(beginSec.minute) + '-' + \
+        msg = msg + "\n" + str(beginSec.hour) + \
+            ':' + str(beginSec.minute) + '-' + \
                  str(endSec.hour) + ':' + str(endSec.minute)
-    if shift[3] != None:
+    if shift[3] is not None:
         hours = (end - begin) + (endSec - beginSec)
-    else: #hours of the shift
+    else:  # hours of the shift
         hours = end - begin
-    msg = msg + "\n" + str(hours.seconds/3600) + " hours"
-    print(msg)
+    msg = msg + "\n" + str(hours.seconds / 3600) + " hours"
     return msg
-
 
 
 def addShift(msg):
     parts = msg[1:].split(" ")
-    print("command = ", msg[:1], " parts = ", parts, " len ", len(parts))
+    print(("command = ", msg[:1], " parts = ", parts, " len ", len(parts)))
     #we split day and month from msg
     day, month = parts[0].split("/")
     ddmm = day + month
     date = datetime.date(2018, int(month), int(day))
-    #we split begin, end hours and minutes into integer that we arrange in datetime.time
+    #we split begin, end hours and minutes
+    #into integer that we arrange in datetime.time
     beginHour, beginMinute = parts[1].split("h")
-    if beginMinute !='':
+    if beginMinute != '':
         beginTime = datetime.time(int(beginHour), int(beginMinute), 0)
     else:
         beginTime = datetime.time(int(beginHour), 0, 0)
     endHour, endMinute = parts[2].split("h")
-    if endMinute !='':
+    if endMinute != '':
         endTime = datetime.time(int(endHour), int(endMinute), 0)
     else:
         endTime = datetime.time(int(endHour), 0, 0)
     if len(parts) == 5:
-        #we split begin, end hours and minutes into integer that we arrange in datetime.time
+        #we split begin, end hours and minutes
+         #into integer that we arrange in datetime.time
         beginHour, beginMinute = parts[3].split("h")
-        if beginMinute !='':
+        if beginMinute != '':
             beginTimeSec = datetime.time(int(beginHour), int(beginMinute), 0)
         else:
             beginTimeSec = datetime.time(int(beginHour), 0, 0)
@@ -89,22 +93,20 @@ def addShift(msg):
     else:
         beginSec = None
         endSec = None
-    #then we combine day month hours and minutes in datetime, and if end h < begin h, we add a day
+    #then we combine day month hours and minutes
+     #in datetime, and if end h < begin h, we add a day
     begin = datetime.datetime.combine(date, beginTime)
     if endTime < beginTime:
         end = datetime.datetime.combine(date + datetime.timedelta(days=1), endTime)
     else:
         end = datetime.datetime.combine(date, endTime)
 
-
-    print("ddmm : ", ddmm, " date", str(date), "\n", begin, " - ", end)
     if len(parts)==5:
-        print("second shift : ", beginSec, " - ", endSec)
+        print(("second shift : ", beginSec, " - ", endSec))
         hours = (end - begin) + (endSec - beginSec)
-        print("hours = ", hours)
-    else: #hours of the shift
+    else: # hours of the shift
         hours = end - begin
-        print("hours = ", hours.seconds/3600)
+
 
     try:
         with db:
@@ -112,18 +114,18 @@ def addShift(msg):
             cursor.execute('''INSERT INTO work(ddmm, begin, end, beginSec, endSec)
                   VALUES(?,?,?,?,?)''', (ddmm, begin, end, beginSec, endSec))
             db.commit()
-            if len(parts)==5:
+            if len(parts) == 5:
                 hours = (end - begin) + (endSec - beginSec)
-            else: #hours of the shift
+            else:  # hours of the shift
                 hours = end - begin
-            return str(hours.seconds/3600) + " hours"
+            return str(hours.seconds / 3600) + " hours"
     except sqlite3.IntegrityError:
         print('Record already exists')
 
 
 def showShift(msg):
     parts = msg[1:].split(" ")
-    print("command = ", msg[:1], " parts = ", parts, " len ", len(parts))
+    print(("command = ", msg[:1], " parts = ", parts, " len ", len(parts)))
     #we split day and month from msg
     day, month = parts[0].split("/")
     ddmm = day + month
@@ -132,13 +134,45 @@ def showShift(msg):
         cursor = db.cursor()
         cursor.execute('''SELECT ddmm, begin, end, beginSec, endSec FROM work WHERE ddmm = ?''', (ddmm,))
         shift = cursor.fetchone()
-        print(shift)
         return beatifulize(shift)
+
+
+def getWeek(dstr):
+    return dstr.isocalendar()[1]
+
+
+def showWeek(msg):
+    nothing, week = msg.split()
+    print(("using ", week))
+    with db:
+        sumHours = datetime.timedelta()
+        cursor = db.cursor()
+        cursor.execute('''
+                        SELECT ddmm, begin, end, beginSec, endSec FROM work
+                        ''')
+        shift = cursor.fetchall()
+        for day in shift:
+            begin = day[1]
+            print(begin)
+            if begin.isocalendar()[1] == int(week):
+                msg = msg + '\n ' + beatifulize(day)
+                if day[3] is not None:
+                    hours = (day[2] - day[1]) + (day[4] - day[3])
+                else:  # hours of the shift
+                    hours = day[2] - day[1]
+                sumHours = sumHours + hours
+
+
+        days, seconds = sumHours.days, sumHours.seconds
+        hours = days * 24 + seconds // 3600
+        minutes = (seconds % 3600) // 60
+        return msg + '\n\n' + str(hours) + ':' + str(minutes) + " hours"
+
 
 
 def remShift(msg):
     parts = msg[1:].split(" ")
-    print("command = ", msg[:1], " parts = ", parts, " len ", len(parts))
+    print(("command = ", msg[:1], " parts = ", parts, " len ", len(parts)))
     #we split day and month from msg
     day, month = parts[0].split("/")
     ddmm = day + month
@@ -174,6 +208,8 @@ class YourBot(telepot.Bot):
                     bot.sendMessage(chat_id, showShift(msg['text']))
                 elif command == '-':
                     bot.sendMessage(chat_id, remShift(msg['text']))
+                elif 'week' in msg['text']:
+                    bot.sendMessage(chat_id, showWeek(msg['text']))
 
 TOKEN = telegrambot
 bot = YourBot(TOKEN)
