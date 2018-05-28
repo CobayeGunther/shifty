@@ -208,7 +208,7 @@ class YourBot(telepot.Bot):
                     bot.sendMessage(chat_id, showShift(msg['text']))
                 elif command == '-':
                     bot.sendMessage(chat_id, remShift(msg['text']))
-                elif 'week' in msg['text']:
+                elif 'week' in msg['text'] or 'Week' in msg['text']:
                     bot.sendMessage(chat_id, showWeek(msg['text']))
 
 TOKEN = telegrambot
