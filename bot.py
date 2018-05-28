@@ -36,20 +36,20 @@ def beatifulize(shift):
         endSec = shift[4]
 
     msg =  str(week[begin.weekday()]) + ' ' \
-             + str(begin.day) + '/' + str(begin.month) + ' : \n' + \
+             + str(begin.day) + '/' + str(begin.month) + ' : \n    ' + \
              str(begin.hour) + ':' + str(begin.minute) + '-' + \
              str(end.hour) + ':' + str(end.minute)
     if shift[3] is not None:
         beginSec = shift[3]
         endSec = shift[4]
-        msg = msg + "\n" + str(beginSec.hour) + \
+        msg = msg + "\n    " + str(beginSec.hour) + \
             ':' + str(beginSec.minute) + '-' + \
                  str(endSec.hour) + ':' + str(endSec.minute)
     if shift[3] is not None:
         hours = (end - begin) + (endSec - beginSec)
     else:  # hours of the shift
         hours = end - begin
-    msg = msg + "\n" + str(hours.seconds / 3600) + " hours"
+    msg = msg + "\n    " + str(hours.seconds / 3600) + " hours"
     return msg
 
 
