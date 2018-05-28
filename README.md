@@ -19,6 +19,32 @@ Made an error  ? erase the day with
     you : -20/01
     bot : 2001 removed
 
+How Many hours did i Worked last week ?
+    you : week 19
+    bot : week 19
+	   Monday 7/5 : 
+	  11:0-14:30
+	  17:0-22:30
+	  9.0 hours
+	   Tuesday 8/5 : 
+	  14:30-21:0
+	  6.5 hours
+ 	   Wednesday 9/5 : 
+	  7:30-14:30
+	  7.0 hours
+ 	   Friday 11/5 : 
+	  14:30-0:30
+	  10.0 hours
+ 	   Saturday 12/5 : 
+	  15:30-20:30
+	  5.0 hours
+
+	  37:30 hours
+
+
+
+
+
 
 ## TODO
 I want it to be able to give the total of working hours per week, and per month. 
