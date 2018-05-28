@@ -73,7 +73,7 @@ For example:
 
 
 ## TODO
-I want it to be able to give the total of working hours per week, and per month. 
+I want it to be able to give the total of working hours ~~per week~~, and per month. 
 maybe some type of graphical calendar of working days to be send via photo  ?
 
 
