@@ -43,6 +43,31 @@ How Many hours did i Worked last week ?
 	  37:30 hours
 
 
+## Requirements 
+
+* Python 3+
+* [Telepot](https://github.com/nickoala/telepot)
+* sqlite3
+* datetime
+* time
+* Bot key & `tokens.py`
+    * Hide all the keys and admin variables in `tokens.py`. Use it only for sensitive variables. Avoid creating functions not to clutter the namespaces through the import.
+    * Get a key from the [Bot Father](https://telegram.me/BotFather)
+    * Clone that repo
+    * In the folder with the cloned repo create a file `tokens.py`
+       * It's added to the `.gitignore` so you don't commit your own (and I don't commit mine:)
+    * In that file put a string variable `telegrambot` which equals your key
+       * For example: `telegrambot = "000000000:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"`
+   
+## Setting your userid
+
+You have to set a variable `adminchatid` in `tokens.py` to be equal your chat_id or multiple chat_id (if more people will use your bot).
+For example:
+* `adminchatid = [443355]`
+
+## Running the bot
+
+`python3 __init__.py`
 
 
 
