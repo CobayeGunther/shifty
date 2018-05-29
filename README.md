@@ -50,6 +50,7 @@ How Many hours did i Worked last week ?
 * sqlite3
 * datetime
 * time
+* calendar
 * Bot key & `tokens.py`
     * Hide all the keys and admin variables in `tokens.py`. Use it only for sensitive variables. Avoid creating functions not to clutter the namespaces through the import.
     * Get a key from the [Bot Father](https://telegram.me/BotFather)
