@@ -4,7 +4,7 @@ import telepot
 import sqlite3
 import datetime
 import time
-
+import calendar
 
 db = sqlite3.connect('datas',
                     check_same_thread=False,
@@ -35,21 +35,21 @@ def beatifulize(shift):
         beginSec = shift[3]
         endSec = shift[4]
 
-    msg =  str(week[begin.weekday()]) + ' ' \
-             + str(begin.day) + '/' + str(begin.month) + ' : \n    ' + \
+    msg =  "" + str(week[begin.weekday()]) + ' ' \
+             + str(begin.day) + '/' + str(begin.month) + ' : \n    _' + \
              str(begin.hour) + ':' + str(begin.minute) + '-' + \
-             str(end.hour) + ':' + str(end.minute)
+             str(end.hour) + ':' + str(end.minute) + "_"
     if shift[3] is not None:
         beginSec = shift[3]
         endSec = shift[4]
-        msg = msg + "\n    " + str(beginSec.hour) + \
+        msg = msg + "\n    _" + str(beginSec.hour) + \
             ':' + str(beginSec.minute) + '-' + \
-                 str(endSec.hour) + ':' + str(endSec.minute)
+                 str(endSec.hour) + ':' + str(endSec.minute) + '_'
     if shift[3] is not None:
         hours = (end - begin) + (endSec - beginSec)
     else:  # hours of the shift
         hours = end - begin
-    msg = msg + "\n    " + str(hours.seconds / 3600) + " hours"
+    msg = msg + "\n    *" + str(hours.seconds / 3600) + " hours*"
     return msg
 
 
@@ -166,8 +166,36 @@ def showWeek(msg):
         days, seconds = sumHours.days, sumHours.seconds
         hours = days * 24 + seconds // 3600
         minutes = (seconds % 3600) // 60
-        return msg + '\n\n' + str(hours) + ':' + str(minutes) + " hours"
+        return msg + '\n\n*' + str(hours) + ':' + str(minutes) + " hours*"
 
+
+def showMonth(msg):
+    nothing, month = msg.split()
+    print(("using ", month))
+    msg = calendar.month_name[int(month)]
+    with db:
+        sumHours = datetime.timedelta()
+        cursor = db.cursor()
+        cursor.execute('''
+                        SELECT ddmm, begin, end, beginSec, endSec FROM work
+                        ''')
+        shift = cursor.fetchall()
+        for day in shift:
+            begin = day[1]
+            print(begin)
+            if begin.month == int(month):
+                msg = msg + '\n ' + beatifulize(day)
+                if day[3] is not None:
+                    hours = (day[2] - day[1]) + (day[4] - day[3])
+                else:  # hours of the shift
+                    hours = day[2] - day[1]
+                sumHours = sumHours + hours
+
+
+        days, seconds = sumHours.days, sumHours.seconds
+        hours = days * 24 + seconds // 3600
+        minutes = (seconds % 3600) // 60
+        return msg + '\n\n*' + str(hours) + ':' + str(minutes) + " hours*"
 
 
 def remShift(msg):
@@ -203,13 +231,15 @@ class YourBot(telepot.Bot):
             if content_type == 'text':
                 command = msg['text'][:1]
                 if command == '+':
-                    bot.sendMessage(chat_id, addShift(msg['text']))
+                    bot.sendMessage(chat_id, addShift(msg['text']), parse_mode='Markdown')
                 elif command == '?':
-                    bot.sendMessage(chat_id, showShift(msg['text']))
+                    bot.sendMessage(chat_id, showShift(msg['text']), parse_mode='Markdown')
                 elif command == '-':
-                    bot.sendMessage(chat_id, remShift(msg['text']))
+                    bot.sendMessage(chat_id, remShift(msg['text']), parse_mode='Markdown')
                 elif 'week' in msg['text'] or 'Week' in msg['text']:
-                    bot.sendMessage(chat_id, showWeek(msg['text']))
+                    bot.sendMessage(chat_id, showWeek(msg['text']), parse_mode='Markdown')
+                elif 'month' in msg['text'] or 'Month' in msg['text']:
+                    bot.sendMessage(chat_id, showMonth(msg['text']), parse_mode='Markdown')
 
 TOKEN = telegrambot
 bot = YourBot(TOKEN)
