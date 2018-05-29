@@ -21,13 +21,13 @@ except sqlite3.OperationalError:
 def beatifulize(shift):
     #i don't like the datetime representation,
     #so i made my own showing weekday, shifts and hours of work
-    week   = ['Monday',
-              'Tuesday',
-              'Wednesday',
-              'Thursday',
-              'Friday',
-              'Saturday',
-              'Sunday']
+    week = ['Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday',
+            'Sunday']
     ddmm = shift[0]
     begin = shift[1]
     end = shift[2]
@@ -35,7 +35,7 @@ def beatifulize(shift):
         beginSec = shift[3]
         endSec = shift[4]
 
-    msg =  "" + str(week[begin.weekday()]) + ' ' \
+    msg = "" + str(week[begin.weekday()]) + ' ' \
              + str(begin.day) + '/' + str(begin.month) + ' : \n    _' + \
              str(begin.hour) + ':' + str(begin.minute) + '-' + \
              str(end.hour) + ':' + str(end.minute) + "_"
@@ -87,7 +87,8 @@ def addShift(msg):
             endTimeSec = datetime.time(int(endHour), 0, 0)
         beginSec = datetime.datetime.combine(date, beginTimeSec)
         if endTimeSec < beginTimeSec:
-            endSec = datetime.datetime.combine(date + datetime.timedelta(days=1), endTimeSec)
+            endSec = datetime.datetime.combine(date +
+                        datetime.timedelta(days=1), endTimeSec)
         else:
             endSec = datetime.datetime.combine(date, endTimeSec)
     else:
@@ -97,16 +98,16 @@ def addShift(msg):
      #in datetime, and if end h < begin h, we add a day
     begin = datetime.datetime.combine(date, beginTime)
     if endTime < beginTime:
-        end = datetime.datetime.combine(date + datetime.timedelta(days=1), endTime)
+        end = datetime.datetime.combine(date + datetime.timedelta(days=1),
+                                        endTime)
     else:
         end = datetime.datetime.combine(date, endTime)
 
-    if len(parts)==5:
+    if len(parts) == 5:
         print(("second shift : ", beginSec, " - ", endSec))
         hours = (end - begin) + (endSec - beginSec)
-    else: # hours of the shift
+    else:  # hours of the shift
         hours = end - begin
-
 
     try:
         with db:
@@ -161,8 +162,6 @@ def showWeek(msg):
                 else:  # hours of the shift
                     hours = day[2] - day[1]
                 sumHours = sumHours + hours
-
-
         days, seconds = sumHours.days, sumHours.seconds
         hours = days * 24 + seconds // 3600
         minutes = (seconds % 3600) // 60
@@ -190,8 +189,6 @@ def showMonth(msg):
                 else:  # hours of the shift
                     hours = day[2] - day[1]
                 sumHours = sumHours + hours
-
-
         days, seconds = sumHours.days, sumHours.seconds
         hours = days * 24 + seconds // 3600
         minutes = (seconds % 3600) // 60
@@ -231,15 +228,20 @@ class YourBot(telepot.Bot):
             if content_type == 'text':
                 command = msg['text'][:1]
                 if command == '+':
-                    bot.sendMessage(chat_id, addShift(msg['text']), parse_mode='Markdown')
+                    bot.sendMessage(chat_id, addShift(msg['text']),
+                                     parse_mode='Markdown')
                 elif command == '?':
-                    bot.sendMessage(chat_id, showShift(msg['text']), parse_mode='Markdown')
+                    bot.sendMessage(chat_id, showShift(msg['text']),
+                                    parse_mode='Markdown')
                 elif command == '-':
-                    bot.sendMessage(chat_id, remShift(msg['text']), parse_mode='Markdown')
+                    bot.sendMessage(chat_id, remShift(msg['text']),
+                                     parse_mode='Markdown')
                 elif 'week' in msg['text'] or 'Week' in msg['text']:
-                    bot.sendMessage(chat_id, showWeek(msg['text']), parse_mode='Markdown')
+                    bot.sendMessage(chat_id, showWeek(msg['text']),
+                                    parse_mode='Markdown')
                 elif 'month' in msg['text'] or 'Month' in msg['text']:
-                    bot.sendMessage(chat_id, showMonth(msg['text']), parse_mode='Markdown')
+                    bot.sendMessage(chat_id, showMonth(msg['text']),
+                                    parse_mode='Markdown')
 
 TOKEN = telegrambot
 bot = YourBot(TOKEN)
@@ -247,14 +249,6 @@ bot.message_loop()
 
 
 def main():
-    test = "+11/06 11h00 12h00"
-    test2 = "+11/06 11h00 12h00 19h00 22h00"
-    test3 = "?11/06"
-    print("enter you work shift")
-    #msg = input()
-    msg = test3
-    print(msg)
-
     # Keep the program running.
     while 1:
         time.sleep(10)  # 10 seconds
